@@ -13,8 +13,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define NUM_OF_CUBES 100
-
 
 static void Error_callback_for_glfw(int error, const char* description)
 {
@@ -34,34 +32,11 @@ static void Key_callback_for_glfw(GLFWwindow* window, int key, int scancode, int
     {
         glfwSetWindowShouldClose(window, 1);
     }
-    if (GLFW_KEY_W == key && GLFW_PRESS == action)
-    {
-        Translate_camera((vec4_type){0.0f, 0.0f, 0.5f, 0.0f});
-    }
-    if (GLFW_KEY_S == key && GLFW_PRESS == action)
-    {
-        Translate_camera((vec4_type){0.0f, 0.0f, -0.5f, 0.0f});
-    }
-    if (GLFW_KEY_A == key && GLFW_PRESS == action)
-    {
-        Translate_camera((vec4_type){0.5f, 0.0f, 0.0f, 0.0f});
-    }
-    if (GLFW_KEY_D == key && GLFW_PRESS == action)
-    {
-        Translate_camera((vec4_type){-0.5f, 0.0f, 0.0f, 0.0f});
-    }
     if (GLFW_KEY_UP == key && GLFW_PRESS == action)
     {
-        struct loaded_model* temp = Get_model_pointer_by_name("First cube");
-        if (0.0f == temp->links_to_phys_objects[0]->translation_speed.y)
-        {
-            Translate_physics_object(temp->links_to_phys_objects[0], (struct vec4_type) {0.0f, 1.0f, 0.0f, 0.0f});
-            Increase_transl_speed(temp->links_to_phys_objects[0], (struct vec4_type) {0.0f, 7.0f, 0.0f, 0.0f});
-        }
     }
     if (GLFW_KEY_DOWN == key && GLFW_PRESS == action)
     {
-        Increase_camera_speed((vec4_type){-0.5f, 0.0f, 0.0f, 0.0f});
     }
 }
 
@@ -85,12 +60,9 @@ static void Mouse_button_callback(GLFWwindow* window, int button, int action, in
 
     if (GLFW_MOUSE_BUTTON_LEFT == button && GLFW_PRESS == action)
     {
-        Increase_camera_speed((vec4_type){-0.5f, 0.0f, 0.0f, 0.0f});
     }
     if (GLFW_MOUSE_BUTTON_RIGHT == button && GLFW_PRESS == action)
     {
-        struct loaded_model* temp = Get_model_pointer_by_name("First cube");
-        Translate_physics_object(temp->links_to_phys_objects[0], (struct vec4_type) {-2.0f, 0.0f, 0.0f, 0.0f});
     }
 }
 
@@ -179,12 +151,6 @@ int main(void)
         return -1;
     }
 
-    rc2 = Load_model_ff_and_name_it("objects/Just_a_cube.obj", "Second cube");
-    if (NULL == rc2)
-    {
-        fprintf(stderr, "ERROR: Failed to load model from file.\n");
-        return -1;
-    }
     printf("Meshes loaded.\n");
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -201,6 +167,7 @@ int main(void)
 
     Set_view_matrix_uniform_location( glGetUniformLocation(main_shdr_program_id, "view_matrix") );
     Initialize_camera_struct();       //My own invention
+    Translate_camera((vec4_type){0.0f, 0.0f, -4.0f, 0.0f});
 
     int projection_matrix_loc = glGetUniformLocation(main_shdr_program_id, "projection_matrix");
     int old_window_width = 0;
@@ -220,27 +187,7 @@ int main(void)
         return -1;
     }
 
-    struct loaded_model* tmp_model = Get_model_pointer_by_name("Second cube");
-    for (int i = 0; i < NUM_OF_CUBES; i++)
-    {
-        rc3 = Add_phys_obj(tmp_model);
-        if (NULL == rc3)
-        {
-            fprintf(stderr, "ERROR: Failed to load phys object.\n");
-            return -1;
-        }
-        Translate_physics_object(rc3, (vec4_type){(i + 1) * (10.0f + i), 0.0f, 0.0f, 0.0f});
-    }
     printf("Physics loaded.\n");
-////////////////////////////////////////////////////////////////////////////////
-
-    //Rotate_camera((vec4_type){1.0f, 0.0f, 0.0f, 0.0f}, -PI * 0.0625f);
-    Rotate_camera((vec4_type){0.0f, 1.0f, 0.0f, 0.0f}, -PI * 0.5f);
-    Translate_camera((vec4_type){0.0f, -5.0f, 0.0f, 0.0f});
-
-    struct loaded_model* temp = Get_model_pointer_by_name("First cube");
-    Increase_transl_speed(temp->links_to_phys_objects[0], (struct vec4_type) {3.0f, 0.0f, 0.0f, 0.0f});
-    Increase_transl_accel(temp->links_to_phys_objects[0], (struct vec4_type) {0.5f, 0.0f, 0.0f, 0.0f});
 ////////////////////////////////////////////////////////////////////////////////
 
     Handle_OGL_errors("ERROR: Failure during initialization.\n");
@@ -250,21 +197,11 @@ int main(void)
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
         struct loaded_model* model = Get_model_pointer_by_name("First cube");
         glBindVertexArray(model->vao_id);
         glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, &model->links_to_phys_objects[0]->model_matrix.col[0].x);
-
         glDrawElements(GL_TRIANGLES, model->num_of_indices, GL_UNSIGNED_INT, (GLvoid*) 0);
-
-
-        model = Get_model_pointer_by_name("Second cube");
-        glBindVertexArray(model->vao_id);
-        for (int i = 0; i < NUM_OF_CUBES; i++)
-        {
-            glUniformMatrix4fv(model_matrix_loc, 1, GL_FALSE, &model->links_to_phys_objects[i]->model_matrix.col[0].x);
-
-            glDrawElements(GL_TRIANGLES, model->num_of_indices, GL_UNSIGNED_INT, (GLvoid*) 0);
-        }
 
 
         Physics_cycle();

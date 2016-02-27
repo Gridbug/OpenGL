@@ -1,5 +1,4 @@
 - Add textures
-- Add left\right strife
 - Start using quaternions
 - Remove relying on constansts from phys cycle
 - Add rotation quaternion to every physics object

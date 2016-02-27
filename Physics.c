@@ -134,25 +134,7 @@ void Physics_cycle(void)
         }
     }
 
-    vec4_type temp = Vector_by_scalar(Get_camera_speed(), DELTA_TIME);
+    vec4_type cam_speed = Vector_by_scalar(Get_camera_speed(), DELTA_TIME);
     Increase_camera_speed(Vector_by_scalar(Get_camera_acceleration(), DELTA_TIME));
-    Translate_camera(temp);
-
-    //printf("%3.6f.%3.6f.%3.6f.%3.6f\n", temp.x, temp.y, temp.z, temp.w);
-
-    // struct loaded_model* model = Get_model_pointer_by_name("Second cube");
-    // for (int i = 0; i < model->num_of_linked_objs; i++)
-    // {
-    //     float cube_center_x = (i + 1) * (10.0f + i);
-    //     vec4_type player_coords = my_phys_objs.array[0].model_matrix.col[3];
-    //     if (fabs(player_coords.x - cube_center_x) < 2.0f && player_coords.y < 1.5)
-    //     {
-    //         srand((unsigned int) clock());
-    //
-    //         printf("You lose!\n");
-    //         printf("Your score is: %.1f\n", (i - 1.0f) * 10.0f + (rand() % 10) / 10.0f);
-    //         printf("My grandma can play better than you.\n");
-    //         exit(EXIT_FAILURE);
-    //     }
-    // }
+    Translate_camera(cam_speed);
 }

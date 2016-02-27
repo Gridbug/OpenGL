@@ -31,11 +31,6 @@ struct vec4_type Construct_vec4(const float x, const float y, const float z, con
 }
 
 
-// struct mat4_type Get_identity_matrix(void)
-// {
-//     return IDENTITY_MAT4;
-// }
-
 struct mat4_type Matrix_by_matrix(const struct mat4_type mat1, const struct mat4_type mat2)
 {
     struct mat4_type res = IDENTITY_MAT4;
