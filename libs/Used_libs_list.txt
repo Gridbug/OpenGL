@@ -1,0 +1,8 @@
+Already used:
+-GLFW 3.1.2                     //for window creating
+-gl3w                           //for extensions loading
+
+Will use them in future:
+-Assimp                         //for models loading
+-AntTweakBar                    //for simple GUI
+-Intel Math Kernel library      //for matrix operations
